@@ -1,18 +1,35 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useStore } from '../store/useStore';
+import { useAuth0 } from "@auth0/auth0-react";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
+import { RiLogoutBoxLine } from "react-icons/ri";
+import Swal from 'sweetalert2';
 
 const NavBar = () => {
     const navigate = useNavigate();
-    const { user, logout } = useStore();
+    const { user, logout: logoutStore } = useStore();
+    const { logout: logoutAuth0 } = useAuth0();
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
     const handleLogout = () => {
-        logout();
-        navigate('/');
+        Swal.fire({
+            title: '¡Hasta luego!',
+            text: 'Has cerrado tu sesión correctamente. ¡Vuelve pronto!',
+            icon: 'info',
+            timer: 2000,
+            showConfirmButton: false,
+            timerProgressBar: true,
+        }).then(() => {
+
+            logoutStore();
+            setIsOpen(false);
+            logoutAuth0({
+                logoutParams: { returnTo: window.location.origin }
+            });
+        });
     }
 
     const linkStyles = ({ isActive }) =>
@@ -20,9 +37,8 @@ const NavBar = () => {
         }`;
 
     return (
-        <nav className="bg-gray-800 text-white sticky top-0 z-50 shadow-md">
+        <nav className="bg-gray-800 text-white sticky top-0 z-50 shadow-md mb-4">
             <div className="flex justify-between items-center p-4 max-w-7xl mx-auto">
-                {/* LOGO */}
                 <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate('/')}>
                     CinePlanet<span className="text-[#ffcc00]">Reto</span>
                 </div>
@@ -32,7 +48,7 @@ const NavBar = () => {
                     {isOpen ? <HiX /> : <HiMenuAlt3 />}
                 </div>
 
-                {/* LINKS DESKTOP */}
+                {/* MENÚ DESKTOP */}
                 <ul className="hidden md:flex gap-8 items-center">
                     <li><NavLink to="/" className={linkStyles}>Home</NavLink></li>
                     <li><NavLink to="/dulceria" className={linkStyles}>Dulcería</NavLink></li>
@@ -40,12 +56,7 @@ const NavBar = () => {
                     {user ? (
                         <li className="flex items-center gap-4">
                             <span className="text-sm opacity-80 italic">Hola, {user.name}</span>
-                            <button
-                                className="border border-white px-3 py-1 rounded hover:bg-white hover:text-gray-800 transition-all"
-                                onClick={handleLogout}
-                            >
-                                Salir
-                            </button>
+                            <RiLogoutBoxLine className=" text-white" onClick={handleLogout} />
                         </li>
                     ) : (
                         <li>
@@ -78,12 +89,7 @@ const NavBar = () => {
                         {user ? (
                             <div className="space-y-4">
                                 <p className="text-lg italic text-yellow-400">Hola, {user.name}</p>
-                                <button
-                                    className="w-full text-left text-red-400"
-                                    onClick={handleLogout}
-                                >
-                                    Cerrar Sesión
-                                </button>
+                                <RiLogoutBoxLine className=" text-red-400" onClick={handleLogout} />
                             </div>
                         ) : (
                             <li>
