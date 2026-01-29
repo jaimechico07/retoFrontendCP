@@ -52,7 +52,7 @@ const Login = () => {
                         prompt: 'select_account'
                     }
                 })}
-                className="bg-white border-2 border-gray-200 px-6 py-3 rounded-full flex items-center gap-3 hover:shadow-lg transition-all font-semibold text-gray-700"
+                className="bg-white border-2 border-gray-200 px-6 py-3 rounded-full flex items-center gap-3 hover:shadow-lg transition-all font-semibold text-gray-700 cursor-pointer"
             >
                 <img src="https://www.google.com/favicon.ico" className="w-5" alt="Google" />
                 Continuar con Google
@@ -66,7 +66,7 @@ const Login = () => {
 
             <button
                 onClick={handleGuestLogin}
-                className="text-[#003399] font-bold hover:underline text-lg"
+                className="text-[#003399] font-bold hover:underline text-lg cursor-pointer"
             >
                 Ingresar como Invitado
             </button>

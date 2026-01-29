@@ -3,6 +3,7 @@ import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import Dulceria from "../pages/Dulceria/Dulceria";
 import Pay from "../pages/Pay/Pay";
+import { ProtectedRoute } from "./ProtectedRouted";
 
 
 const router = createBrowserRouter([
@@ -21,7 +22,10 @@ const router = createBrowserRouter([
     },
     {
         path: "/pay",
-        element: <Pay />,
+        element:
+            <ProtectedRoute>
+                <Pay />
+            </ProtectedRoute>,
 
     },
 
