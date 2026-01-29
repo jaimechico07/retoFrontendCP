@@ -34,25 +34,25 @@ Para este proyecto se integraron las siguientes herramientas:
 🚀 Instalación y Configuración
 1. Clonar el repositorio:
 Bash
-git clone [(https://github.com/jaimechico07/retoFrontendCP.git)]
-cd [retoFrontendCP]
+- git clone [(https://github.com/jaimechico07/retoFrontendCP.git)]
+- cd [retoFrontendCP]
 
 2. Instalar dependencias:
 Bash
-npm install
+- npm install
 
-3. Librerías añadidas manualmente para el reto: Si estás empezando desde cero, estas son las librerías instaladas:
+3. Librerías añadidas manualmente para el reto:
 
 Bash
-npm install react-router-dom zustand react-hook-form @hookform/resolvers zod crypto-js sweetalert2
+- npm install react-router-dom zustand react-hook-form @hookform/resolvers zod crypto-js sweetalert2
 
 4. Variables de Entorno (Configuración PayU): Asegúrate de que en paymentService.js las credenciales de Sandbox sean las correctas:
 
-API_KEY: 4Vj8eK4rloUd2...
+- API_KEY: 4Vj8eK4rloUd2...
 
-MERCHANT_ID: 508029
+- MERCHANT_ID: 508029
 
-URL_PAYU: https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi
+- URL_PAYU: https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi
 
 📸 Flujo de Pago
 - Selección: El usuario agrega productos en /dulceria.
