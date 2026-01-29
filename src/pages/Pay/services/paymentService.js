@@ -3,42 +3,54 @@ import CryptoJS from "crypto-js";
 const PAYU_CONFIG = {
     API_KEY: "4Vj8eK4rloUd272L48hsrarnUA",
     API_LOGIN: "pRRXKOl8ikMmt9u",
-    MERCHANT_ID: "508029",
-    ACCOUNT_ID: "512323",
+    MERCHANT_ID: 508029,
+    ACCOUNT_ID: 512323,
     URL_PAYU: "https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi"
 };
 
 export const processFullPayment = async (formData, totalAmount) => {
 
-    const amountValue = parseFloat(totalAmount.toFixed(1));
-    const amountStr = amountValue.toString();
+    const amountFormatted = totalAmount.toFixed(2);
+    const amountValue = Number(amountFormatted);
 
-    const [month, year] = formData.expiryDate.split('/');
+    const expiryClean = formData.expiryDate.replace(/\s/g, "");
+    const [monthRaw, yearRaw] = expiryClean.split('/');
+    const month = (monthRaw || "").padStart(2, "0");
+    const year = (yearRaw || "").padStart(2, "0");
     const formattedExpirationDate = `20${year}/${month}`;
 
-    const fecha = new Date();
-    const fechaLegible = fecha.toISOString().split('T')[0];
-    const referenceCode = `PRODUCT_TEST_${fechaLegible}`;
+    const requestTime = new Date();
+    const fechaLegible = requestTime.toISOString().split('T')[0];
+    const referenceCode = `PRODUCT_TEST_${fechaLegible}_${requestTime.getTime()}`;
 
-    const signatureText = `${PAYU_CONFIG.API_KEY}~${PAYU_CONFIG.MERCHANT_ID}~${referenceCode}~${amountStr}~PEN`;
+    const signatureText = `${PAYU_CONFIG.API_KEY}~${PAYU_CONFIG.MERCHANT_ID}~${referenceCode}~${amountFormatted}~PEN`;
     const signature = CryptoJS.MD5(signatureText).toString();
 
-    const buyerAndPayerData = {
+    const addressData = {
+        street1: "Av. Isabel La Catolica 103-La Victoria",
+        city: "Lima",
+        state: "Lima y Callao",
+        country: "PE",
+        postalCode: "000000",
+        phone: "7563126"
+    };
 
+    const buyerData = {
         fullName: formData.fullName,
         emailAddress: formData.email,
         contactPhone: "7563126",
         dniNumber: formData.docNumber,
-        shippingAddress: {
-            street1: "Av. Isabel La Católica 103-La Victoria",
-            street2: "125544",
-            city: "Lima",
-            state: "Lima y Callao",
-            country: "PE",
-            postalCode: "000000",
-            phone: "7563126"
+        dniType: formData.docType,
+        shippingAddress: addressData
+    };
 
-        }
+    const payerData = {
+        fullName: formData.fullName,
+        emailAddress: formData.email,
+        contactPhone: "7563126",
+        dniNumber: formData.docNumber,
+        dniType: formData.docType,
+        billingAddress: addressData
     };
 
     const payload = {
@@ -57,17 +69,19 @@ export const processFullPayment = async (formData, totalAmount) => {
                 signature: signature,
                 notifyUrl: "http://www.payu.com/notify",
                 additionalValues: {
-                    TX_VALUE: { value: amountValue, currency: "PEN" }
+                    TX_VALUE: { value: amountFormatted, currency: "PEN" },
+                    TX_TAX: { value: 0, currency: "PEN" },
+                    TX_TAX_RETURN_BASE: { value: 0, currency: "PEN" }
                 },
-                buyer: buyerAndPayerData,
-                shippingAddress: buyerAndPayerData.shippingAddress
+                buyer: buyerData,
+                shippingAddress: addressData
             },
-            payer: buyerAndPayerData,
+            payer: payerData,
             creditCard: {
                 number: formData.cardNumber.replace(/\s/g, ''),
                 securityCode: formData.cvv,
                 expirationDate: formattedExpirationDate,
-                name: "APPROVED"
+                name: formData.fullName
             },
             extraParameters: {
                 "INSTALLMENTS_NUMBER": 1
